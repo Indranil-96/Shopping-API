@@ -1,17 +1,21 @@
 //Importing modules....
 import express from "express";
-import productrouter from "./features/product/controllers/product-router";
-
-
-
-// Middlewares....
-
+import productrouter from "./features/product/controllers/product-router.js";
+import Env from "dotenv";
+Env.config();
+import bodyParser from "body-parser";
 
 
 
 //Aquring Express in our app....
 const server=express();
-const port=3300;
+const port=process.env.port || 3300;
+
+
+
+// Middlewares....
+server.use(bodyParser.json());
+
 
 
 // Routes...
