@@ -1,0 +1,14 @@
+----Product Controller----
+Get Product
+Add Product
+Get One Product
+Filter Product
+Rate Product
+Add Items to cart
+Get items of cart
+Remove items from cart
+
+
+----User Controller----
+Signup - Email, Password, Type of User [customerl, Seller]
+Signin - Email, Passsword
