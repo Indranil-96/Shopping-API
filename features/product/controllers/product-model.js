@@ -33,6 +33,10 @@ class productDB{
         return result;
     }
 
+    static rateProduct(userID, productID, rating){
+        
+    }
+
 }
 
 let products=[

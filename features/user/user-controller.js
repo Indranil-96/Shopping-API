@@ -1,4 +1,5 @@
 import UserModel from "./userDB.js";
+import jwt from 'jsonwebtoken';
 
 class userController{
     signin(req,res){
@@ -8,7 +9,16 @@ class userController{
         if(!result){
             return res.status(401).send("Invalid Credential");
         }else{
-            return res.send("Login Successful");
+
+            // Basic Authentication....
+    //        return res.send("Login Successful");
+
+            // JWT Authentication.....
+
+            //create Token...
+            const token=jwt.sign({id: result.id, mail: result.email},"luYLL3CcHV",{expiresIn: '1h'});  //sign method has three parameter jwt.sign(payload,key,option)
+            //send token....
+            return res.status(200).send(token);
         }
     }
 
