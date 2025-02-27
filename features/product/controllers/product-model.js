@@ -1,4 +1,4 @@
-
+import UserModel from "../../user/userDB.js";
 class productDB{
 
     constructor(id, name, des,imageURl, catagory, price, size){
@@ -34,7 +34,32 @@ class productDB{
     }
 
     static rateProduct(userID, productID, rating){
-        
+        // validate user and product
+        const user= UserModel.getall().find((u)=> u.id==userID );
+
+        if(!user){
+            return 'User not found';
+        }
+
+        const product=products.find((p)=> p.id == productID );
+
+        if(!product){
+            return 'Product not found';
+        }
+
+        // check if rating is available or not...
+        if(!products.rating){
+            product.rating=[];
+            product.rating.push({id: userID, rating: rating});
+        }else{
+            const exsistIndex=product.rating.findIndex((r) => r.id==userID);
+
+            if(exsistIndex>=0){
+                product.rating[exsistIndex]={id: userID, rating: rating};
+            }else{
+                product.rating.push({id: userID, rating: rating});
+            }
+        }
     }
 
 }

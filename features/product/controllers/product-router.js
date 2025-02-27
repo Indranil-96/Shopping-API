@@ -18,6 +18,8 @@ router.get('/filter', productController.filterProduct); // Here we will get data
 
 router.get('/:id',productController.getOneProduct);
 
+router.post('/rate', productController.rateProduct);
+
 
 
 
