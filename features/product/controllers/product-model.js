@@ -38,7 +38,7 @@ class productDB{
         const user= UserModel.getall().find((u)=> u.id==userID );
 
         if(!user){
-            return 'User not found';
+            throw new Error('User not found');
         }
 
         const product=products.find((p)=> p.id == productID );
