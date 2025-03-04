@@ -10,6 +10,7 @@ import jwtauth from "./middlewares/jwtAuth.js";
 import cartRouter from "./features/cart/cart-route.js";
 import cors from 'cors';
 import loggerMiddleware from "./middlewares/Winstone-Logger.js";
+import { ApplicationError } from "./error-Handler/Application-Error.js";
 // import loggerMiddleware from "./middlewares/Logger-middleware.js";
 // import swaggerJSDoc from "swagger-jsdoc";
 // import swagger from "swagger-ui-express"; // swagger ui here....
@@ -73,6 +74,20 @@ server.use(cors());
 server.use(bodyParser.json());
 server.use(express.json()); // to parse data while sending raw data from postman..
 server.use(loggerMiddleware);
+
+//Error handelling middleware.... this should be appeare at last
+server.use((err, req, res, next)=>{
+    console.log(err);
+
+
+    // if it is an application error
+    if(err instanceof ApplicationError){ // is it an instance of error handelling class...
+        res.status(err.code).send(err.message);
+    }
+
+    //if it is a server error
+    res.status(500).send('Internal Server Error');
+});
 
 // Swagger
 

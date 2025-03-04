@@ -24,13 +24,13 @@ class ProductController{
     rateProduct(req,res){
         const {userID, productID, rating}=req.query;
 
-        const err=productDB.rateProduct(userID, productID, rating);
-
-        if(err){
-            return res.status(400).send(err);
-        }else{
-            return res.status(200).send('Rating Done');
+        // Handelling Error using try catch which is thrown by the model method....
+        try {
+            const err=productDB.rateProduct(userID, productID, rating);
+        } catch (err) {
+            return res.status(400).send(err.message);
         }
+            return res.status(200).send('Rating Done');
     }
 
     getOneProduct(req,res){

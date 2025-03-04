@@ -2,3 +2,12 @@
 {"level":"info","message":"/favicon.ico - {}","service":"request-logging"}
 {"level":"info","message":"/api/user/signin - {\"email\":\"rahul@gmail.com\",\"password\":1234}","service":"request-logging"}
 {"level":"info","message":"/api/product - {}","service":"request-logging"}
+{"level":"info","message":"/api/user/signin - {\"email\":\"rahul@gmail.com\",\"password\":1234}","service":"request-logging"}
+{"level":"info","message":"/api/product/rate?userID=1&productID=1&rating=5 - {}","service":"request-logging"}
+{"level":"info","message":"/api/product/rate?userID=11&productID=1&rating=5 - {}","service":"request-logging"}
+{"level":"info","message":"/api/product/rate?userID=11&productID=1&rating=5 - {}","service":"request-logging"}
+{"level":"info","message":"/api/product/rate?userID=11&productID=1&rating=5 - {}","service":"request-logging"}
+{"level":"info","message":"/api/product/rate?userID=1&productID=1&rating=5 - {}","service":"request-logging"}
+{"level":"info","message":"/api/product/rate?userID=1&productID=10&rating=5 - {}","service":"request-logging"}
+{"level":"info","message":"/api/product/rate?userID=1&productID=10&rating=5 - {}","service":"request-logging"}
+{"level":"info","message":"/api/product/rate?userID=1&productID=1&rating=5 - {}","service":"request-logging"}

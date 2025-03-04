@@ -1,3 +1,4 @@
+import { ApplicationError } from "../../../error-Handler/Application-Error.js";
 import UserModel from "../../user/userDB.js";
 class productDB{
 
@@ -38,13 +39,13 @@ class productDB{
         const user= UserModel.getall().find((u)=> u.id==userID );
 
         if(!user){
-            throw new Error('User not found');
+            throw new ApplicationError(400,'User not found'); // throwing error to the controller to handel...
         }
 
         const product=products.find((p)=> p.id == productID );
 
         if(!product){
-            return 'Product not found';
+            throw new ApplicationError(400,'Product Not Found');
         }
 
         // check if rating is available or not...
