@@ -11,6 +11,7 @@ import cartRouter from "./features/cart/cart-route.js";
 import cors from 'cors';
 import loggerMiddleware from "./middlewares/Winstone-Logger.js";
 import { ApplicationError } from "./error-Handler/Application-Error.js";
+import {connectDB} from "./config/configDB.js";
 // import loggerMiddleware from "./middlewares/Logger-middleware.js";
 // import swaggerJSDoc from "swagger-jsdoc";
 // import swagger from "swagger-ui-express"; // swagger ui here....
@@ -114,5 +115,6 @@ server.listen(port,(err)=>{
         console.log(`Error Occured:- ${err}`);
     }else{
         console.log(`Server is Listining to the port- http://localhost:${port}`);
+        connectDB();
     }
 })

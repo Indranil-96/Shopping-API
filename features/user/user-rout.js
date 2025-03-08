@@ -11,8 +11,12 @@ const usercontroller= new userController();
 
 
 //Routes....
-UserRouter.post("/signup",usercontroller.signup);
-UserRouter.post("/signin",usercontroller.signin);
+UserRouter.post("/signup",(req, res)=>{
+    usercontroller.signup(req,res);
+});
+UserRouter.post("/signin",(req, res)=>{
+    usercontroller.singin(req,res);
+});
 
 
 export default UserRouter;
