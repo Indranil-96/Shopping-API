@@ -1,120 +1,105 @@
-//Importing modules....
-import express from "express";
-import productrouter from "./features/product/controllers/product-router.js";
-import UserRouter from "./features/user/user-rout.js";
-// import basicAuthorizer from "./middlewares/basicAuth.js";
-import Env from "dotenv";
-Env.config();
-import bodyParser from "body-parser";
-import jwtauth from "./middlewares/jwtAuth.js";
-import cartRouter from "./features/cart/cart-route.js";
-import cors from 'cors';
-import loggerMiddleware from "./middlewares/Winstone-Logger.js";
-import { ApplicationError } from "./error-Handler/Application-Error.js";
-import {connectDB} from "./config/configDB.js";
-// import loggerMiddleware from "./middlewares/Logger-middleware.js";
-// import swaggerJSDoc from "swagger-jsdoc";
-// import swagger from "swagger-ui-express"; // swagger ui here....
-// import apiDocs from "./swagger.json" assert {type:'json'} ;
+// 1. Import Exprerss
+import express from 'express';
+import swagger from 'swagger-ui-express';
+import dotenv from "dotenv";
 
-// import { promises as fs } from 'fs';
-// import { dirname, join as pathJoin } from 'path';
-// import { fileURLToPath } from 'url';
+import productRouter from './src/features/product/product.routes.js';
+import userRouter from './src/features/user/user.routes.js';
+import jwtAuth from './src/middlewares/jwt.middleware.js';
+import cartRouter from './src/features/cartItems/cartItems.routes.js';
+import apiDocs from './swagger.json' assert { type: 'json' };
+import loggerMiddleware from './src/middlewares/logger.middleware.js';
+import { ApplicationError } from './src/error-handler/applicationError.js';
+import {connectToMongoDB} from './src/config/mongodb.js';
+import orderRouter from './src/features/order/order.routes.js';
+import { connectUsingMongoose } from './src/config/mongooseConfig.js';
+import mongoose from 'mongoose';
+import likeRouter from './src/features/like/like.routes.js';
 
-// Get the directory name of the current module
-// const __dirname = dirname(fileURLToPath(import.meta.url));
+// 2. Create Server
+const server = express();
 
-// async function loadData() {
-//   try {
-//     const filePath = pathJoin(__dirname, 'swagger.json');
-//     const fileContent = await fs.readFile(filePath, 'utf-8');
-//     const data = JSON.parse(fileContent);
-//     console.log(data);
-//     return data;
-//   } catch (error) {
-//     console.error('Error loading JSON:', error);
-//   }
-// }
+// load all the environment variables in application
+dotenv.config();
 
+// CORS policy configuration
+server.use((req, res, next) => {
+  res.header(
+    'Access-Control-Allow-Origin',
+    'http://localhost:5500'
+  );
+  res.header('Access-Control-Allow-Headers', '*');
+  res.header('Access-Control-Allow-Methods', '*');
+  // return ok for preflight request.
+  if (req.method == 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
+server.use(express.json());
+// Bearer <token>
+// for all requests related to product, redirect to product routes.
+// localhost:3200/api/products
+server.use(
+  '/api-docs',
+  swagger.serve,
+  swagger.setup(apiDocs)
+);
 
-
-
-//Aquring Express in our app....
-const server=express();
-const port=process.env.port || 3300;
-
-
-
-
-//CORS Policy configuration
-
-
-// bydefault cors will allow all client to accessthis but through the use of options we can limit this....
-let corsOptions={
-    origin: 'http://localhost:5501'
-}
-
-server.use(cors());
-
-// server.use((req,res,next)=>{
-//     res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:5501');
-//     res.header('Access-Control-Allow-Headers', '*');
-//     res.header('Access-Control-Allow-Methods', '*');
-  
-//     if(req.method=="OPTIONS"){
-//       return res.status(200);
-//     }
-//     next();
-//   });
-
-
-
-
-// Middlewares....
-server.use(bodyParser.json());
-server.use(express.json()); // to parse data while sending raw data from postman..
 server.use(loggerMiddleware);
+server.use('/api/orders', jwtAuth, orderRouter);
 
-//Error handelling middleware.... this should be appeare at last
-server.use((err, req, res, next)=>{
-    console.log(err);
+server.use(
+  '/api/products',
+  jwtAuth,
+  productRouter
+);
+server.use(
+  '/api/cartItems',
+  loggerMiddleware,
+  jwtAuth,
+  cartRouter
+);
+server.use('/api/users', userRouter);
+server.use('/api/likes', jwtAuth, likeRouter)
 
-
-    // if it is an application error
-    if(err instanceof ApplicationError){ // is it an instance of error handelling class...
-        res.status(err.code).send(err.message);
-    }
-
-    //if it is a server error
-    res.status(500).send('Internal Server Error');
+// 3. Default request handler
+server.get('/', (req, res) => {
+  res.send('Welcome to Ecommerce APIs');
 });
 
-// Swagger
+// Error handler middleware
+server.use((err, req, res, next) => {
+  console.log(err);
+  if(err instanceof mongoose.Error.ValidationError){
+    return res.status(400).send(err.message);
+  }
+  if (err instanceof ApplicationError) {
+    return res.status(err.code).send(err.message);
+  }
 
-// server.use('/api-Docs', swagger.serve, swagger.setup(loadData()));
-
-// Routes...
-server.use("/api/product",jwtauth,productrouter);
-server.use("/api/user",UserRouter);
-server.use("/api/cart",jwtauth,cartRouter);
-server.get('/', (req,res)=>{
-    res.send("Welcome to E-Commerce API");
+  // server errors.
+  res
+    .status(500)
+    .send(
+      'Something went wrong, please try later'
+    );
 });
 
-// handelling 404 -- it will handel all other routes which is not present in our application as because we have not specified any path here..
-server.use((req,res)=>{
-    res.status(404).send('API not Found');
+// 4. Middleware to handle 404 requests.
+server.use((req, res) => {
+  res
+    .status(404)
+    .send(
+      'API not found. Please check our documentation for more information at localhost:3200/api-docs'
+    );
 });
 
+// 5. Specify port.
+server.listen(3200, ()=>{
+  console.log('Server is running at 3200');
+  // connectToMongoDB();
+  connectUsingMongoose();
+});
 
-
-//Server Listning....
-server.listen(port,(err)=>{
-    if(err){
-        console.log(`Error Occured:- ${err}`);
-    }else{
-        console.log(`Server is Listining to the port- http://localhost:${port}`);
-        connectDB();
-    }
-})
